@@ -1,9 +1,13 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import { UserRouter } from './user/user.router';
 import { ConfigServer } from './config/config';
-
+import { UserRouter } from './user/user.router';
+import { PurchaseRouter } from './purchase/purchase.router';
+import { ProductRouter } from './product/product.router';
+import { CustomerRouter } from './customer/customer.router';
+import { CategoryRouter } from './category/category.router';
+import { PurchaseProductRouter } from './purchase/purchase-product.router';
 class ServerBootstrap extends ConfigServer {
   public app: express.Application = express();
   private port: number = this.getNumberEnv('PORT');
@@ -23,7 +27,14 @@ class ServerBootstrap extends ConfigServer {
   }
 
   routers(): Array<express.Router> {
-    return [new UserRouter().router];
+    return [
+      new UserRouter().router,
+      new PurchaseRouter().router,
+      new ProductRouter().router,
+      new CustomerRouter().router,
+      new CategoryRouter().router,
+      new PurchaseProductRouter().router,
+    ];
   }
 
   public listen() {
