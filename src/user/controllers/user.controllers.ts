@@ -1,16 +1,25 @@
 import { Request, Response } from 'express';
+import { HttpResponse } from '../../shared/response/http.response';
 import { UserService } from '../services/user.service';
+import { UpdateResult, DeleteResult } from 'typeorm';
 
 export class UserController {
-  constructor(private readonly userService: UserService = new UserService()) {}
+  constructor(
+    private readonly userService: UserService = new UserService(),
+    private readonly httpResponse: HttpResponse = new HttpResponse()
+  ) {}
 
   async getUsers(req: Request, res: Response) {
     try {
       const data = await this.userService.findAllUser();
 
-      res.status(200).json(data);
+      if (data.length === 0) {
+        return this.httpResponse.NotFound(res, 'No existen datos');
+      }
+
+      return this.httpResponse.Ok(res, data);
     } catch (e) {
-      console.log(e);
+      return this.httpResponse.Error(res, e);
     }
   }
 
@@ -19,9 +28,13 @@ export class UserController {
       const { id } = req.params;
       const data = await this.userService.findUserById(id);
 
-      res.status(200).json(data);
+      if (!data) {
+        return this.httpResponse.NotFound(res, 'No existen datos');
+      }
+
+      return this.httpResponse.Ok(res, data);
     } catch (e) {
-      console.log(e);
+      return this.httpResponse.Error(res, e);
     }
   }
 
@@ -29,31 +42,42 @@ export class UserController {
     try {
       const data = await this.userService.createUser(req.body);
 
-      res.status(200).json(data);
+      return this.httpResponse.Ok(res, data);
     } catch (e) {
-      console.log(e);
+      return this.httpResponse.Error(res, e);
     }
   }
 
   async updateUser(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.userService.updateUser(id, req.body);
+      const data: UpdateResult = await this.userService.updateUser(
+        id,
+        req.body
+      );
 
-      res.status(200).json(data);
+      if (!data.affected) {
+        return this.httpResponse.NotFound(res, 'Hay un error en actualizar');
+      }
+
+      return this.httpResponse.Ok(res, data);
     } catch (e) {
-      console.log(e);
+      return this.httpResponse.Error(res, e);
     }
   }
 
   async deleteUser(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const data = await this.userService.deleteUser(id);
+      const data: DeleteResult = await this.userService.deleteUser(id);
 
-      res.status(200).json(data);
+      if (!data.affected) {
+        return this.httpResponse.NotFound(res, 'Hay un error en eliminar');
+      }
+
+      return this.httpResponse.Ok(res, data);
     } catch (e) {
-      console.log(e);
+      return this.httpResponse.Error(res, e);
     }
   }
 }
