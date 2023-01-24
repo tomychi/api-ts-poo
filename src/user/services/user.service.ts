@@ -13,7 +13,7 @@ export class UserService extends BaseService<UserEntity> {
   }
 
   async findUserById(id: string): Promise<UserEntity | null> {
-    return (await this.execRepository).findOne({ where: { id } });
+    return (await this.execRepository).findOneBy({ id });
   }
 
   async createUser(body: UserDTO): Promise<UserEntity> {

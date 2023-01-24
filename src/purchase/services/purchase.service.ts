@@ -11,7 +11,7 @@ export class PurchaseService extends BaseService<PurchaseEntity> {
     return (await this.execRepository).find();
   }
   async findPurchaseById(id: string): Promise<PurchaseEntity | null> {
-    return (await this.execRepository).findOne({ where: { id } });
+    return (await this.execRepository).findOneBy({ id });
   }
   async createPurchase(body: PurchaseDTO): Promise<PurchaseEntity> {
     return (await this.execRepository).save(body);
