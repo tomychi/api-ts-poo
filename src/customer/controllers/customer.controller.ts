@@ -5,6 +5,7 @@ export class CustomerController {
   constructor(
     private readonly customerService: CustomerService = new CustomerService()
   ) {}
+
   async getCustomers(req: Request, res: Response) {
     try {
       const data = await this.customerService.findAllCustomers();
@@ -13,6 +14,7 @@ export class CustomerController {
       console.error(e);
     }
   }
+
   async getCustomerById(req: Request, res: Response) {
     const { id } = req.params;
     try {
@@ -22,6 +24,7 @@ export class CustomerController {
       console.error(e);
     }
   }
+
   async createCustomer(req: Request, res: Response) {
     try {
       const data = await this.customerService.createCustomer(req.body);
@@ -30,6 +33,7 @@ export class CustomerController {
       console.error(e);
     }
   }
+
   async updateCustomer(req: Request, res: Response) {
     const { id } = req.params;
     try {
@@ -39,6 +43,7 @@ export class CustomerController {
       console.error(e);
     }
   }
+
   async deleteCustomer(req: Request, res: Response) {
     const { id } = req.params;
     try {
