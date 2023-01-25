@@ -14,29 +14,32 @@ export class AuthService extends ConfigServer {
   }
 
   public async validateUser(
-    username: string, // puede ser el email
+    username: string,
     password: string
   ): Promise<UserEntity | null> {
-    const userByEmail = await this.userService.findUserByEmail(username);
-    const userByUsername = await this.userService.findUserByUsername(username);
+    const userByEmail = await this.userService.findByEmail(username);
+    const userByUsername = await this.userService.findByUsername(username);
 
     if (userByUsername) {
       const isMatch = await bcrypt.compare(password, userByUsername.password);
-      isMatch && userByUsername;
+      if (isMatch) {
+        return userByUsername;
+      }
     }
-
     if (userByEmail) {
       const isMatch = await bcrypt.compare(password, userByEmail.password);
-      isMatch && userByEmail;
+      if (isMatch) {
+        return userByEmail;
+      }
     }
 
     return null;
   }
 
-  // JWT_SECRET
+  //JWT_SECRET
 
   sing(payload: jwt.JwtPayload, secret: any) {
-    return this.jwtInstance.sign(payload, secret);
+    return this.jwtInstance.sign(payload, secret, { expiresIn: '1h' });
   }
 
   public async generateJWT(
