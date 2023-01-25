@@ -13,6 +13,7 @@ import { DataSource } from 'typeorm';
 import { LoginStrategy } from './auth/strategies/login.strategy';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { AuthRouter } from './auth/auth.router';
+import { MailRouter } from './mail/mail.router';
 class ServerBootstrap extends ConfigServer {
   public app: express.Application = express();
   private port: number = this.getNumberEnv('PORT');
@@ -27,7 +28,14 @@ class ServerBootstrap extends ConfigServer {
     this.dbConnect();
 
     this.app.use(morgan('dev'));
-    this.app.use(cors());
+    this.app.use(express.static(__dirname + '/templates'));
+    this.app.use(
+      cors({
+        origin: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        credentials: true,
+      })
+    );
 
     this.app.use('/api', this.routers());
 
@@ -37,6 +45,7 @@ class ServerBootstrap extends ConfigServer {
   routers(): Array<express.Router> {
     return [
       new UserRouter().router,
+      new MailRouter().router,
       new PurchaseRouter().router,
       new ProductRouter().router,
       new CustomerRouter().router,
@@ -62,7 +71,9 @@ class ServerBootstrap extends ConfigServer {
 
   public listen() {
     this.app.listen(this.port, () => {
-      console.log(`Server listening on port ${this.port}`);
+      console.log(
+        `Listen in ${this.port} :: ENV = ${this.getEnvironment('ENV')}`
+      );
     });
   }
 }
